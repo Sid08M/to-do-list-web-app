@@ -91,6 +91,30 @@ function displayTaskCount() {
     taskCountDisplay.textContent = currentTaskCount;
 }
 
+// NEW: The Edit Function
+function editTask(index) {
+    // 1. Get the current text of the specific task
+    const currentText = Tasks[index].text;
+    
+    // 2. Open a prompt window, pre-filled with the current text
+    const newText = prompt("Edit your task:", currentText);
+
+    // 3. The Gimmick check: Ensure they didn't click cancel AND didn't leave it empty
+    if (newText !== null) {
+        const trimmedText = newText.trim();
+        
+        if (trimmedText === '') {
+            alert("Task cannot be empty!");
+            return;
+        }
+
+        // 4. Update the array and refresh the screen
+        Tasks[index].text = trimmedText;
+        rendertask();
+    }
+}
+
+// MODIFIED: Injecting the edit button next to the delete button
 function rendertask(){
     todoList.innerHTML = '';
     
@@ -98,21 +122,25 @@ function rendertask(){
         todoList.innerHTML = '<div class="empty-message">No tasks yet</div>';
         return;
     }
+    
     Tasks.forEach((task, index) => {
         const taskItem = document.createElement('div');
         taskItem.className = 'task-item';
-        // MODIFIED: Injecting task.text and task.date from the object
+        
+        // Added a 'task-actions' div to group the buttons together neatly
         taskItem.innerHTML = `
             <div class="task-info">
                 <span class="task-text">${task.text}</span>
                 <span class="task-date-display">📅 ${task.date}</span>
             </div>
-            <button onclick="deleteSpecificTask(${index})" class="delete-btn">Delete</button>
+            <div class="task-actions">
+                <button onclick="editTask(${index})" class="edit-btn">Edit</button>
+                <button onclick="deleteSpecificTask(${index})" class="delete-btn">Delete</button>
+            </div>
         `;
         todoList.appendChild(taskItem);
     });
 }
-
 function deleteSpecificTask(index) {
     if (index < 0 || index >= Tasks.length) {
         alert('Invalid task.');
